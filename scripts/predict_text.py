@@ -42,6 +42,7 @@ class prediction(object):
         
         # Config
         self.ls_dates_file = 'data/minutes/copom_dates.xlsx'
+        self.pickle_minutes = 'data/minutes/minutes.pkl'
         self.pickle_scores = 'data/minutes/minutes_scores.pkl'
         self.csv_minutes = 'data/minutes/copom_minutes_partial.txt'
 
@@ -102,7 +103,7 @@ class prediction(object):
 
     def minute_score(self):
     
-        minutes_df = pd.read_pickle(self.pickle_minutes).iloc[0:20,:]
+        minutes_df = pd.read_pickle(self.pickle_minutes)
 
         i = 0
         minute_score_ls = []
