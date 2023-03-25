@@ -42,7 +42,7 @@ class prediction(object):
         
         # Config
         self.ls_dates_file = 'data/minutes/copom_dates.xlsx'
-        self.pickle_minutes = 'data/minutes/minutes.pkl'
+        self.pickle_scores = 'data/minutes/minutes_scores.pkl'
         self.csv_minutes = 'data/minutes/copom_minutes_partial.txt'
 
         # Plot display preference
@@ -103,18 +103,16 @@ class prediction(object):
     def minute_score(self):
     
         minutes_df = pd.read_pickle(self.pickle_minutes).iloc[0:20,:]
-        # minutes_df = pd.read_csv(self.csv_minutes, sep = ';', engine = "python", 
-        #                          error_bad_lines = False)
 
         i = 0
         minute_score_ls = []
         for minute in minutes_df.minutes:
             i += 1
             print(f'ESTAMOS NA ATA NÚMERO {i} #########################################')
-            if len(minute) < 100:
+            if isinstance(minute, float):
                 minute_score_ls.append(0)
             else:
-                textos = pd.DataFrame(minute.split('\n \n'), columns = ['Text'])
+                textos = pd.DataFrame(minute.split('\n'), columns = ['Text'])
                 textos['Result'] = ""
 
                 for d in range(0, len(textos['Text'])):
@@ -128,6 +126,10 @@ class prediction(object):
                                     df = textos['Result'], min_v = min_v_a, max_v = max_v_a))
 
                 minute_score_ls.append(textos['Scores_adj'].mean()*100)
+        
+        minutes_df['score'] = minute_score_ls
+
+        minutes_df.to_pickle(self.pickle_scores)
 
         return minute_score_ls
 
