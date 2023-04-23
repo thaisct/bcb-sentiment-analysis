@@ -12,6 +12,7 @@ from nltk.tokenize import sent_tokenize
 from finbert.utils import *
 import numpy as np
 import logging
+import shutil
 
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from transformers import AutoTokenizer
@@ -646,9 +647,13 @@ if __name__ == "__main__":
 
     if DEBUG:
 
-        lm_path = 'models/language_model/finbertTRC2'
-        cl_path = 'models/classifier_model/finbert-sentiment'
-        cl_data_path = 'data/sentiment_data'
+        ### Setting path variables:
+
+        lm_path = 'C:\\Users\\Thais\\Documents\\Python\\bcb-sentiment-analysis\\models\\language_model\\finbertTRC2'
+        cl_path = 'C:\\Users\\Thais\\Documents\\Python\\bcb-sentiment-analysis\\models\\classifier_model\\finbert-sentiment'
+        cl_data_path = 'C:\\Users\\Thais\\Documents\\Python\\bcb-sentiment-analysis\\data\\sentiment_data'
+
+        ###  Configuring training parameters
 
         # Clean the cl_path
         try:
@@ -656,10 +661,10 @@ if __name__ == "__main__":
         except:
             pass
 
-        bertmodel = AutoModelForSequenceClassification.from_pretrained(lm_path,
-                                                                    cache_dir=None, num_labels=3)
-        
-        myclass = Config(data_dir=cl_data_path,
+        bertmodel = AutoModelForSequenceClassification.from_pretrained(lm_path,cache_dir=None, num_labels=3)
+
+
+        config = Config(data_dir=cl_data_path,
                         bert_model=bertmodel,
                         num_train_epochs=4,
                         model_dir=cl_path,
@@ -671,8 +676,12 @@ if __name__ == "__main__":
                         local_rank=-1,
                         discriminate=True,
                         gradual_unfreeze=True)
-        
+
         finbert = FinBert(config)
         finbert.base_model = lm_path
         finbert.config.discriminate=True
         finbert.config.gradual_unfreeze=True
+
+        ### Prepare the model
+
+        finbert.prepare_model(label_list=['positive','negative','neutral'])
