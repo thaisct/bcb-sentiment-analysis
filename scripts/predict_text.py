@@ -44,7 +44,7 @@ class prediction(object):
         self.ls_dates_file = 'data/minutes/copom_dates.xlsx'
         self.pickle_minutes = 'data/minutes/minutes.pkl'
         self.pickle_scores = 'data/minutes/minutes_scores.pkl'
-        self.csv_minutes = 'data/minutes/copom_minutes_partial.txt'
+        self.fine_tuned_model = 'models/classifier_model/model_20230423'
 
         # Plot display preference
         plt.rcParams["figure.figsize"] = (18,9)
@@ -53,7 +53,7 @@ class prediction(object):
         # Models import
         print("Importing models ...")
         self.tokenizer = AutoTokenizer.from_pretrained('ProsusAI/finbert')
-        self.model = AutoModelForSequenceClassification.from_pretrained('ProsusAI/finbert', output_attentions = True)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.fine_tuned_model, output_attentions = True)
         self.label_list = ['positive', 'neutral', 'negative']
 
     #########################################################################
