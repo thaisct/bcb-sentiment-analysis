@@ -6,6 +6,8 @@ import os
 import logging
 import sys
 import pickle
+import time
+import datetime
 sys.path.append("..")
 
 import seaborn as sns
@@ -43,8 +45,8 @@ class prediction(object):
         # Config
         self.ls_dates_file = 'data/minutes/copom_dates.xlsx'
         self.pickle_minutes = 'data/minutes/minutes.pkl'
-        self.pickle_scores = 'data/minutes/minutes_scores.pkl'
-        self.fine_tuned_model = 'models/classifier_model/model_20230423'
+        self.pickle_scores = 'data/minutes/minutes_scores_uncased_20230430.pkl'
+        self.fine_tuned_model = 'models/classifier_model/model_uncased_20230423'
 
         # Plot display preference
         plt.rcParams["figure.figsize"] = (18,9)
@@ -96,12 +98,25 @@ class prediction(object):
             lst += [new_value]
         
         return lst
+    
+    def format_time(self,
+                    elapsed):
+        '''
+        Takes a time in seconds and returns a string hh:mm:ss
+        '''
+        # Round to the nearest second.
+        elapsed_rounded = int(round((elapsed)))
+        
+        # Format as hh:mm:ss
+        return str(datetime.timedelta(seconds=elapsed_rounded))
 
     #########################################################################
     ###### Sentiment Analysis
     #########################################################################
 
     def minute_score(self):
+
+        t0 = time.time()
     
         minutes_df = pd.read_pickle(self.pickle_minutes)
 
@@ -132,6 +147,8 @@ class prediction(object):
 
         minutes_df.to_pickle(self.pickle_scores)
 
+        print("Minute scoring took: {:}".format(prediction.format_time(self, elapsed = time.time() - t0)))
+
         return minute_score_ls
 
 DEBUG = True
@@ -139,6 +156,6 @@ DEBUG = True
 if __name__ == "__main__":
 
     if DEBUG:
-
+        t0 = time.time()
         myclass = prediction()
         myclass.minute_score()
